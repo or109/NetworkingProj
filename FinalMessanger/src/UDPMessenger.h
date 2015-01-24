@@ -21,7 +21,7 @@ class UDPMessenger: public MThread {
 
 private:
 	OnRecieveClbk* rcvClbk;
-	UDPSocket* soket;
+	UDPSocket* udpSocket;
 	int port;
 
 public:
@@ -66,7 +66,6 @@ public:
 
 	// logout user from CPDS
 	string logout();
-
 };
 
 #endif

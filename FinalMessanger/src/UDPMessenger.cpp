@@ -10,6 +10,7 @@
 #include <unistd.h>
 #include <arpa/inet.h>
 #include <cstdlib>
+#define PORT_MIN_RANGE 8888
 
 using namespace std;
 
@@ -37,15 +38,13 @@ UDPMessenger::UDPMessenger(OnRecieveClbk* clbk) {
 	// Init local arguments (if needed)
 	srand(time(NULL));
 
-	// take random port from 8888 to 9999
-	port = rand() % 112 + 8888;
+	// Random port from PORT_MIN_RANGE to PORT_MIN_RANGE+1111
+	port = rand() % 112 + PORT_MIN_RANGE;
 	this->rcvClbk = clbk;
 	this->usr = new User("", "");
 
-	//create the socket
-	soket = new UDPSocket(port);
-
-	//start the thread to receive incoming messages
+	// Start the socket
+	udpSocket = new UDPSocket(port);
 	this->start();
 }
 
@@ -55,37 +54,37 @@ void UDPMessenger::run() {
 
 	while (true) {
 		memset((void*) buffer, 0, 100);
-		soket->recv(buffer, 100);
-		// send message to console
+		udpSocket->recv(buffer, 100);
+
+		// Send message to console
 		rcvClbk->handleMessage(buffer);
 	}
 }
 
+// Send the given message to the given destination
 void UDPMessenger::sendTo(string msg, string ip, int port) {
-	// send the given message to the given destination
-	soket->sendTo(msg, ip, port);
+	udpSocket->sendTo(msg, ip, port);
 }
 
+// Send the message to the address of the last received message
 void UDPMessenger::reply(string msg) {
-	// send the message to the address of the last received message
-	soket->reply(msg);
+	udpSocket->reply(msg);
 }
 
 void UDPMessenger::close() {
-
 	this->logout();
 
 	// Close the thread
 	this->~MThread();
 
 	// Close the socket
-	soket->cclose();
+	udpSocket->cclose();
 
 	// Wait for thread to exit
 	this->waitForThread();
 
 	// Delete and free any allocated resources
-	delete soket;
+	delete udpSocket;
 	delete rcvClbk;
 }
 
@@ -114,32 +113,34 @@ string UDPMessenger::login(string user, string password) {
 	CPDS->setParam("user", user);
 	CPDS->setParam("password", password);
 	string localIp = GetLocalIP();
-
 	CPDS->setParam("ip", localIp);
 
 	// Convert int to string
 	char sport[10] = "";
 	sprintf(sport, "%d", port);
 	CPDS->setParam("port", sport);
+
 	if (CPDS->sendGetRequest()) {
 		string response = CPDS->response();
 		string body = response.substr(response.find("\r\n\r\n") + 4);
 		char data[300] = "", code[10] = "";
+
 		sscanf(body.data(), "%s %s", code, data);
+
 		if (strcmp(code, "OK") == 0) {
 			usr->login(localIp, port);
 		}
 
 		return body;
 	}
-	return "ERROR - cannot connect to server";
 
+	return "ERROR - cannot connect to server";
 }
 
 // Get logged users from server
 string UDPMessenger::getUserList() {
 
-	HTTPClient* CPDS = new HTTPClient(IP_ADDR"/getloggedusers");
+	HTTPClient* CPDS = new HTTPClient(IP_ADDR"/getonlineusers");
 
 	if (CPDS->sendGetRequest()) {
 		string response = CPDS->response();
@@ -167,9 +168,8 @@ string UDPMessenger::getUserDetails(string user) {
 	return "ERROR - cannot connect to server.";
 }
 
-// logout user from server
+// Logout user
 string UDPMessenger::logout() {
-
 	HTTPClient* CPDS = new HTTPClient(IP_ADDR"/logout");
 	CPDS->setParam("user", usr->userName);
 	CPDS->setParam("password", usr->userPassword);
@@ -183,4 +183,3 @@ string UDPMessenger::logout() {
 
 	return "ERROR - cannot connect to server.";
 }
-

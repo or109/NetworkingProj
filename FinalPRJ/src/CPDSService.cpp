@@ -6,11 +6,12 @@ bool String2Int(const std::string& str, int& result) {
 }
 
 CPDSService::CPDSService() {
-	// Register all the servlets
 	httpserver = new HTTPServer(LISTENING_PORT);
+
+	// Register all the servlets
 	httpserver->registerServlet("/register", *(new Register(this)));
 	httpserver->registerServlet("/login", *(new LogIn(this)));
-	httpserver->registerServlet("/getloggedusers", *(new GetLoggedUsers(this)));
+	httpserver->registerServlet("/getonlineusers", *(new GetOnlineUsers(this)));
 	httpserver->registerServlet("/getuserdetails", *(new GetUserDetails(this)));
 	httpserver->registerServlet("/logout", *(new LogOut(this)));
 	httpserver->registerServlet("/webportal.html", *(new WebPortal(this)));
@@ -42,10 +43,10 @@ Register::Register(CPDSService* CPDS) {
 
 // Add new user to user list if not exist
 string Register::handleRequest(map<string, string> params) {
-	map<string, string>::iterator user, pass;
+	map<string, string>::iterator user = params.find("user");
+	map<string, string>::iterator pass = params.find("password");
 	string data;
-	user = params.find("user");
-	pass = params.find("password");
+
 	if (user == params.end() || pass == params.end()) {
 		data = "ERROR - please enter user and password";
 	} else {
@@ -54,7 +55,7 @@ string Register::handleRequest(map<string, string> params) {
 			this->CPDS->userList.insert(
 					pair<string, User*>(user->second,
 							new User(user->second, pass->second)));
-			data = "OK user sign in";
+			data = "OK user registered";
 		} else
 			data = "ERROR - user already exists";
 	}
@@ -66,40 +67,56 @@ string Register::handleRequest(map<string, string> params) {
 	message += slen;
 	message += "\r\n\r\n";
 	message += data;
+
 	return message;
 }
 
 // Init CPDS to servlet
 LogIn::LogIn(CPDSService* CPDS) {
-
 	this->CPDS = CPDS;
 }
+
 // Login to user with password ip and port if user exist and not logged in
 string LogIn::handleRequest(map<string, string> params) {
 	string data;
-	map<string, string>::iterator user, pass, ip, port, source;
+	map<string, string>::iterator user;
+	map<string, string>::iterator pass;
+	map<string, string>::iterator ip;
+	map<string, string>::iterator port;
+	map<string, string>::iterator source;
+	map<string, string>::iterator portInUse;
+	int iport = 0;
+
 	CPDS->UpdateConnections();
 	user = params.find("user");
 	pass = params.find("password");
 	source = params.find("source");
 	ip = params.find("ip");
 	port = params.find("port");
+	string username = user->second;
+	string ipPort = ip->second + ":" + port->second;
+
+	portInUse = this->CPDS->portList.find(ip->second + ":" + port->second);
+
 	if (user == params.end() || pass == params.end() || ip == params.end()
 			|| port == params.end()) {
 		data = "ERROR - please enter user, password, IP and port";
 	} else {
-		if (this->CPDS->userList.find(user->second)
-				== this->CPDS->userList.end()) {
+		if (this->CPDS->userList.find(username) == this->CPDS->userList.end()) {
 			data = "ERROR - user does not exist";
-		} else if (this->CPDS->userList.find(user->second)->second->loggedin)
+		} else if (this->CPDS->userList.find(username)->second->loggedin)
 			data = "ERROR user is already logged in";
-		else if (this->CPDS->userList.find(user->second)->second->userPassword
+		else if (this->CPDS->userList.find(username)->second->userPassword
 				!= pass->second)
 			data = "ERROR - user password is incorrect";
+		else if (portInUse != this->CPDS->portList.end()) // TODO: get port list and scan it
+			data = "ERROR - port " + ipPort + " is already in use";
 		else {
-			int iport = 0;
+			this->CPDS->portList.insert(
+					pair<string, string>(ipPort, "ip:port"));
+
 			String2Int(port->second, iport);
-			this->CPDS->userList.find(user->second)->second->login(ip->second,
+			this->CPDS->userList.find(username)->second->login(ip->second,
 					iport, source->second);
 			data = "OK user logged in";
 		}
@@ -111,17 +128,17 @@ string LogIn::handleRequest(map<string, string> params) {
 	message += slen;
 	message += "\r\n\r\n";
 	message += data;
+
 	return message;
 }
 
-GetLoggedUsers::GetLoggedUsers(CPDSService* CPDS) {
-//Init CPDS to servlet
+// Init CPDS to servlet
+GetOnlineUsers::GetOnlineUsers(CPDSService* CPDS) {
 	this->CPDS = CPDS;
 }
 
 // Return list of logged in users
-string GetLoggedUsers::handleRequest(map<string, string> params) {
-
+string GetOnlineUsers::handleRequest(map<string, string> params) {
 	string result = "OK";
 	CPDS->UpdateConnections();
 	for (map<string, User*>::iterator iterator = CPDS->userList.begin();
@@ -139,8 +156,8 @@ string GetLoggedUsers::handleRequest(map<string, string> params) {
 	return message;
 }
 
-GetJson::GetJson(CPDSService* CPDS) {
 //Init CPDS to servlet
+GetJson::GetJson(CPDSService* CPDS) {
 	this->CPDS = CPDS;
 }
 
@@ -178,8 +195,8 @@ string GetJson::handleRequest(map<string, string> params) {
 	return message;
 }
 
-GetUserDetails::GetUserDetails(CPDSService* CPDS) {
 // Init CPDS to servlet
+GetUserDetails::GetUserDetails(CPDSService* CPDS) {
 	this->CPDS = CPDS;
 }
 
@@ -240,16 +257,16 @@ string LogOut::handleRequest(map<string, string> params) {
 	} else {
 		if (this->CPDS->userList.find(user->second)
 				== this->CPDS->userList.end()) {
-			data = "ERROR user is not exist!";
+			data = "ERROR - user is not exist!";
 		} else if (this->CPDS->userList.find(user->second)->second->userPassword
 				!= pass->second)
-			data = "ERROR user password is incorrect";
+			data = "ERROR - user password is incorrect";
 		else if (this->CPDS->userList.find(user->second)->second->loggedin) {
 
 			this->CPDS->userList.find(user->second)->second->logout();
 			data = "OK user logged out";
 		} else {
-			data = "ERROR user is already Logged Out!";
+			data = "ERROR - user is already logged out";
 		}
 	}
 	string message =
@@ -296,3 +313,4 @@ string WebPortal::handleRequest(map<string, string> params) {
 
 	return message;
 }
+

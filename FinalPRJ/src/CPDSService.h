@@ -12,6 +12,7 @@ public:
 	HTTPServer* httpserver;
 	typedef map<string, User*> tUserList;
 	tUserList userList;
+	map<string, string> portList;//TODO: use a reference to user
 
 	CPDSService();
 	virtual ~CPDSService();
@@ -40,12 +41,12 @@ public:
 	;
 };
 
-class GetLoggedUsers: public HTTPServlet {
+class GetOnlineUsers: public HTTPServlet {
 public:
 	CPDSService* CPDS;
-	GetLoggedUsers(CPDSService* CPDS);
+	GetOnlineUsers(CPDSService* CPDS);
 	virtual string handleRequest(map<string, string> params);
-	virtual ~GetLoggedUsers() {
+	virtual ~GetOnlineUsers() {
 	}
 	;
 };

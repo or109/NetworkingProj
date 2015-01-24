@@ -12,14 +12,11 @@ void User::login(string ip, int port){
 	this->ip = ip;
 	this->port = port;
 	this->loggedin = true;
-
-
 }
 void User::logout(){
 	this->ip = "";
 	this->port = 0;
 	this->loggedin = false;
-
 }
 
 User::~User() {

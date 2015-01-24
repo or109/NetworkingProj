@@ -6,21 +6,22 @@ User::User(string name, string password) {
 	this->loggedin = false;
 	this->ip = "";
 	this->port = 0;
-	this->source="";
+	this->source = "";
 
 }
-void User::login(string ip, int port,string socket){
+
+void User::login(string ip, int port, string socket) {
 	this->ip = ip;
 	this->port = port;
 	this->loggedin = true;
-	this->source=socket;
-
+	this->source = socket;
 }
-void User::logout(){
+
+void User::logout() {
 	this->ip = "";
 	this->port = 0;
 	this->loggedin = false;
-	this->source="";
+	this->source = "";
 }
 
 User::~User() {
