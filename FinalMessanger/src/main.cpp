@@ -97,10 +97,11 @@ int main() {
 		} else if (command == "x") {
 			break;
 		} else {
-			cout << "wrong input" << endl;
+			cout << "Invalid input" << endl;
 			printInstructions();
 		}
 	}
+
 	// Close messenger program
 	messenger->close();
 	delete messenger;

@@ -153,7 +153,7 @@ void HTTPServer::processRequestFromClient(TCPSocket* peer) {
 	rc = peer->recv(buffer, 1000);
 
 	string ipport = peer->fromAddr() + ":" + peer->fromPort();
-	cout << "recv msg: from- " << ipport << buffer << endl;
+	cout << "Received message from: " << ipport << buffer << endl;
 
 	if (rc != 0) {
 		sscanf(buffer, "%s %s %s", method, url, httpVer);
@@ -187,10 +187,8 @@ void HTTPServer::processRequestFromClient(TCPSocket* peer) {
 			message += slen;
 			message += "\r\n\r\n";
 			message += data;
-
 		}
-
-		cout << "sending message:" << message << endl;
+		cout << "Sending message:" << message << endl;
 		peer->send(message.data(), message.length());
 	} else
 		this->peerDisconnect(peer);

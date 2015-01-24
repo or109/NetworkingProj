@@ -9,16 +9,16 @@
 #include "User.h"
 using namespace std;
 
-
 class OnRecieveClbk {
 public:
 	virtual void handleMessage(string msg)=0;
-	virtual ~OnRecieveClbk(){}
+	virtual ~OnRecieveClbk() {
+	}
 };
 
-class UDPMessenger: public MThread{
+class UDPMessenger: public MThread {
 	//declare the class properties
-	
+
 private:
 	OnRecieveClbk* rcvClbk;
 	UDPSocket* soket;
@@ -27,13 +27,12 @@ private:
 public:
 	User* usr;
 
-
 	UDPMessenger(OnRecieveClbk* clbk);
 
 	/**
 	 * sends the given message to the given peer specified by IP
 	 */
-	void sendTo(string msg,string ip,int port);
+	void sendTo(string msg, string ip, int port);
 
 	/**
 	 * reply to an incoming message, this method will send the given message
@@ -67,7 +66,6 @@ public:
 
 	// logout user from CPDS
 	string logout();
-
 
 };
 

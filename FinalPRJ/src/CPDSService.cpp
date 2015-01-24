@@ -13,15 +13,15 @@ CPDSService::CPDSService() {
 	httpserver->registerServlet("/getloggedusers", *(new GetLoggedUsers(this)));
 	httpserver->registerServlet("/getuserdetails", *(new GetUserDetails(this)));
 	httpserver->registerServlet("/logout", *(new LogOut(this)));
-	httpserver->registerServlet("/webportal.html", *(new Portal(this)));
+	httpserver->registerServlet("/webportal.html", *(new WebPortal(this)));
 	httpserver->registerServlet("/getjson", *(new GetJson(this)));
 
 	// Start HTTP server
 	httpserver->start();
 }
 
+// kill HTTP server
 CPDSService::~CPDSService() {
-	// kill HTTP server
 	this->httpserver->kill();
 }
 
@@ -47,7 +47,7 @@ string Register::handleRequest(map<string, string> params) {
 	user = params.find("user");
 	pass = params.find("password");
 	if (user == params.end() || pass == params.end()) {
-		data = "ERROR need to send user and password!";
+		data = "ERROR - please enter user and password";
 	} else {
 		if (this->CPDS->userList.find(user->second)
 				== this->CPDS->userList.end()) {
@@ -56,7 +56,7 @@ string Register::handleRequest(map<string, string> params) {
 							new User(user->second, pass->second)));
 			data = "OK user sign in";
 		} else
-			data = "ERROR user is already exist!";
+			data = "ERROR - user already exists";
 	}
 
 	string message =
@@ -86,16 +86,16 @@ string LogIn::handleRequest(map<string, string> params) {
 	port = params.find("port");
 	if (user == params.end() || pass == params.end() || ip == params.end()
 			|| port == params.end()) {
-		data = "ERROR need to send user, password, ip and port!";
+		data = "ERROR - please enter user, password, IP and port";
 	} else {
 		if (this->CPDS->userList.find(user->second)
 				== this->CPDS->userList.end()) {
-			data = "ERROR user is not exist!";
+			data = "ERROR - user does not exist";
 		} else if (this->CPDS->userList.find(user->second)->second->loggedin)
-			data = "ERROR user is already Logged In!";
+			data = "ERROR user is already logged in";
 		else if (this->CPDS->userList.find(user->second)->second->userPassword
 				!= pass->second)
-			data = "ERROR user password is incorrect";
+			data = "ERROR - user password is incorrect";
 		else {
 			int iport = 0;
 			String2Int(port->second, iport);
@@ -154,13 +154,13 @@ string GetJson::handleRequest(map<string, string> params) {
 
 	for (map<string, User*>::iterator iterator = CPDS->userList.begin();
 			iterator != CPDS->userList.end(); iterator++) {
-		if (!first) {
-			result += ", ";
+		if (iterator->second->loggedin) {
+			if (!first) {
+				result += ", ";
+			}
 			first = false;
-		}
-
-		if (iterator->second->loggedin)
 			result += "{\"user\": \"" + iterator->second->userName + "\"}";
+		}
 	}
 
 	char slen[15];
@@ -179,7 +179,7 @@ string GetJson::handleRequest(map<string, string> params) {
 }
 
 GetUserDetails::GetUserDetails(CPDSService* CPDS) {
-//Init CPDS to servlet
+// Init CPDS to servlet
 	this->CPDS = CPDS;
 }
 
@@ -188,24 +188,27 @@ string GetUserDetails::handleRequest(map<string, string> params) {
 	CPDS->UpdateConnections();
 	map<string, string>::iterator user;
 	string result = "OK ";
+	string username = "";
 
 	user = params.find("user");
 	if (user == params.end()) {
-		result = "ERROR need to send user !";
+		result = "ERROR - please enter user";
 	} else {
-		if (this->CPDS->userList.find(user->second)
-				== this->CPDS->userList.end()) {
-			result = "ERROR user is not exist!";
-		} else if (this->CPDS->userList.find(user->second)->second->loggedin) {
+		username = user->second;
+		if (this->CPDS->userList.find(username) == this->CPDS->userList.end()) {
+			result = "ERROR - user does not exist";
+		} else if (this->CPDS->userList.find(username)->second->loggedin) {
+			username = user->second;
+			char portStr[10] = "";
+			sprintf(portStr, "%d",
+					this->CPDS->userList.find(username)->second->port);
 
-			char sport[10] = "";
-			sprintf(sport, "%d",
-					this->CPDS->userList.find(user->second)->second->port);
-			result += this->CPDS->userList.find(user->second)->second->ip + ":"
-					+ sport;
+			result += "User: " + username + ", IP: "
+					+ this->CPDS->userList.find(username)->second->ip
+					+ ", Port:" + portStr;
 
 		} else
-			result = "ERROR user is not logged in";
+			result = "ERROR - user is not logged in";
 	}
 
 	string message =
@@ -215,12 +218,12 @@ string GetUserDetails::handleRequest(map<string, string> params) {
 	message += slen;
 	message += "\r\n\r\n";
 	message += result;
-	return message;
 
+	return message;
 }
 
-LogOut::LogOut(CPDSService* CPDS) {
 //Init CPDS to servlet
+LogOut::LogOut(CPDSService* CPDS) {
 	this->CPDS = CPDS;
 }
 
@@ -233,7 +236,7 @@ string LogOut::handleRequest(map<string, string> params) {
 	pass = params.find("password");
 
 	if (user == params.end() || pass == params.end()) {
-		data = "ERROR need to send user, password!";
+		data = "ERROR - please enter user and password";
 	} else {
 		if (this->CPDS->userList.find(user->second)
 				== this->CPDS->userList.end()) {
@@ -256,19 +259,21 @@ string LogOut::handleRequest(map<string, string> params) {
 	message += slen;
 	message += "\r\n\r\n";
 	message += data;
-	return message;
 
+	return message;
 }
-Portal::Portal(CPDSService* CPDS) {
-//Init CPDS to servlet
+
+// Init CPDS to servlet
+WebPortal::WebPortal(CPDSService* CPDS) {
 	this->CPDS = CPDS;
 }
-// Return html portal for web browser that show all users and status
-string Portal::handleRequest(map<string, string> params) {
+
+// Return web portal for web browser with all users and status
+string WebPortal::handleRequest(map<string, string> params) {
 	CPDS->UpdateConnections();
 
 	string data =
-			"<!DOCTYPE html><html><head><title>Portal</title></head><body><table border=\"1\"><tr><th>User Name</th><th>Status</th></tr>";
+			"<!DOCTYPE html><html><head><title>WebPortal</title></head><body><table border=\"1\"><tr><th>User Name</th><th>Status</th></tr>";
 
 	for (map<string, User*>::iterator iterator = CPDS->userList.begin();
 			iterator != CPDS->userList.end(); iterator++) {
@@ -288,6 +293,6 @@ string Portal::handleRequest(map<string, string> params) {
 	message += slen;
 	message += "\r\n\r\n";
 	message += data;
+
 	return message;
 }
-

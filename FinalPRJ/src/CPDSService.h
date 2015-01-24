@@ -9,71 +9,84 @@
 class CPDSService {
 public:
 
-	   HTTPServer* httpserver;
-	   typedef map<string, User*> tUserList;
-	   tUserList userList;
-
+	HTTPServer* httpserver;
+	typedef map<string, User*> tUserList;
+	tUserList userList;
 
 	CPDSService();
 	virtual ~CPDSService();
 	void UpdateConnections();
 };
 
-// Servlets calsses for the httpserver register.
+// Servlets classes for the HTTP server register.
 
-class Register: public HTTPServlet{
+class Register: public HTTPServlet {
 public:
 	CPDSService* CPDS;
 	Register(CPDSService* CPDS);
-	virtual string handleRequest(map<string,string> params);
-	virtual ~Register(){};
+	virtual string handleRequest(map<string, string> params);
+	virtual ~Register() {
+	}
+	;
 };
 
-class LogIn: public HTTPServlet{
+class LogIn: public HTTPServlet {
 public:
 	CPDSService* CPDS;
 	LogIn(CPDSService* CPDS);
-	virtual string handleRequest(map<string,string> params);
-	virtual ~LogIn(){};
+	virtual string handleRequest(map<string, string> params);
+	virtual ~LogIn() {
+	}
+	;
 };
 
-class GetLoggedUsers: public HTTPServlet{
+class GetLoggedUsers: public HTTPServlet {
 public:
 	CPDSService* CPDS;
 	GetLoggedUsers(CPDSService* CPDS);
-	virtual string handleRequest(map<string,string> params);
-	virtual ~GetLoggedUsers(){};
+	virtual string handleRequest(map<string, string> params);
+	virtual ~GetLoggedUsers() {
+	}
+	;
 };
 
 // TESTTTTTTTTTTTTTTTTtt
-class GetJson: public HTTPServlet{
+class GetJson: public HTTPServlet {
 public:
 	CPDSService* CPDS;
 	GetJson(CPDSService* CPDS);
-	virtual string handleRequest(map<string,string> params);
-	virtual ~GetJson(){};
+	virtual string handleRequest(map<string, string> params);
+	virtual ~GetJson() {
+	}
+	;
 };
 
-class GetUserDetails: public HTTPServlet{
+class GetUserDetails: public HTTPServlet {
 public:
 	CPDSService* CPDS;
 	GetUserDetails(CPDSService* CPDS);
-	virtual string handleRequest(map<string,string> params);
-	virtual ~GetUserDetails(){};
+	virtual string handleRequest(map<string, string> params);
+	virtual ~GetUserDetails() {
+	}
+	;
 };
 
-class LogOut: public HTTPServlet{
+class LogOut: public HTTPServlet {
 public:
 	CPDSService* CPDS;
 	LogOut(CPDSService* CPDS);
-	virtual string handleRequest(map<string,string> params);
-	virtual ~LogOut(){};
+	virtual string handleRequest(map<string, string> params);
+	virtual ~LogOut() {
+	}
+	;
 };
-class Portal: public HTTPServlet{
+class WebPortal: public HTTPServlet {
 public:
 	CPDSService* CPDS;
-	Portal(CPDSService* CPDS);
-	virtual string handleRequest(map<string,string> params);
-	virtual ~Portal(){};
+	WebPortal(CPDSService* CPDS);
+	virtual string handleRequest(map<string, string> params);
+	virtual ~WebPortal() {
+	}
+	;
 };
 #endif /* CPDSSERVICE_H_ */

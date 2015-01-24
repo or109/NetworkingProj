@@ -94,6 +94,7 @@ string UDPMessenger::registerin(string user, string password) {
 	HTTPClient* CPDS = new HTTPClient(IP_ADDR"/register");
 	CPDS->setParam("user", user);
 	CPDS->setParam("password", password);
+
 	if (CPDS->sendGetRequest()) {
 		string response = CPDS->response();
 		string body = response.substr(response.find("\r\n\r\n") + 4);
