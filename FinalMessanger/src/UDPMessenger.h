@@ -1,5 +1,6 @@
 #ifndef UDPMESSENGER_H_
 #define UDPMESSENGER_H_
+#define IP_ADDR "127.0.0.1"
 
 #include <pthread.h>
 #include "UDPSocket.h"

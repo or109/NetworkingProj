@@ -91,7 +91,7 @@ void UDPMessenger::close() {
 
 // Register user to server
 string UDPMessenger::registerin(string user, string password) {
-	HTTPClient* CPDS = new HTTPClient("127.0.0.1/register");
+	HTTPClient* CPDS = new HTTPClient(IP_ADDR"/register");
 	CPDS->setParam("user", user);
 	CPDS->setParam("password", password);
 	if (CPDS->sendGetRequest()) {
@@ -109,7 +109,7 @@ string UDPMessenger::login(string user, string password) {
 	usr->userName = user;
 	usr->userPassword = password;
 
-	HTTPClient* CPDS = new HTTPClient("127.0.0.1/login");
+	HTTPClient* CPDS = new HTTPClient(IP_ADDR"/login");
 	CPDS->setParam("user", user);
 	CPDS->setParam("password", password);
 	string localIp = GetLocalIP();
@@ -138,7 +138,8 @@ string UDPMessenger::login(string user, string password) {
 // Get logged users from server
 string UDPMessenger::getUserList() {
 
-	HTTPClient* CPDS = new HTTPClient("127.0.0.1/getlogedusers");
+	HTTPClient* CPDS = new HTTPClient(IP_ADDR"/getloggedusers");
+
 	if (CPDS->sendGetRequest()) {
 		string response = CPDS->response();
 		string body = response.substr(response.find("\r\n\r\n") + 4);
@@ -152,7 +153,7 @@ string UDPMessenger::getUserList() {
 // Get user details from server
 string UDPMessenger::getUserDetails(string user) {
 
-	HTTPClient* CPDS = new HTTPClient("127.0.0.1/getuserdetails");
+	HTTPClient* CPDS = new HTTPClient(IP_ADDR"/getuserdetails");
 	CPDS->setParam("user", user);
 
 	if (CPDS->sendGetRequest()) {
@@ -168,7 +169,7 @@ string UDPMessenger::getUserDetails(string user) {
 // logout user from server
 string UDPMessenger::logout() {
 
-	HTTPClient* CPDS = new HTTPClient("127.0.0.1/logout");
+	HTTPClient* CPDS = new HTTPClient(IP_ADDR"/logout");
 	CPDS->setParam("user", usr->userName);
 	CPDS->setParam("password", usr->userPassword);
 

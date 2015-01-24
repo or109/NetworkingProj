@@ -1,5 +1,7 @@
 #ifndef CPDSSERVICE_H_
 #define CPDSSERVICE_H_
+#define LISTENING_PORT 22225
+
 #include "HTTPServer.h"
 #include <map>
 #include "User.h"

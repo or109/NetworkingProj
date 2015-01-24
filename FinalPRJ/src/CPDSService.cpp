@@ -7,10 +7,10 @@ bool String2Int(const std::string& str, int& result) {
 
 CPDSService::CPDSService() {
 	// Register all the servlets
-	httpserver = new HTTPServer(22225);
+	httpserver = new HTTPServer(LISTENING_PORT);
 	httpserver->registerServlet("/register", *(new Register(this)));
 	httpserver->registerServlet("/login", *(new LogIn(this)));
-	httpserver->registerServlet("/getlogedusers", *(new GetLoggedUsers(this)));
+	httpserver->registerServlet("/getloggedusers", *(new GetLoggedUsers(this)));
 	httpserver->registerServlet("/getuserdetails", *(new GetUserDetails(this)));
 	httpserver->registerServlet("/logout", *(new LogOut(this)));
 	httpserver->registerServlet("/webportal.html", *(new Portal(this)));
@@ -35,7 +35,7 @@ void CPDSService::UpdateConnections() {
 	}
 }
 
-//Init CPDS to servlet
+// Init CPDS to servlet
 Register::Register(CPDSService* CPDS) {
 	this->CPDS = CPDS;
 }
@@ -68,8 +68,10 @@ string Register::handleRequest(map<string, string> params) {
 	message += data;
 	return message;
 }
+
+// Init CPDS to servlet
 LogIn::LogIn(CPDSService* CPDS) {
-//Init CPDS to servlet
+
 	this->CPDS = CPDS;
 }
 // Login to user with password ip and port if user exist and not logged in
@@ -142,7 +144,7 @@ GetJson::GetJson(CPDSService* CPDS) {
 	this->CPDS = CPDS;
 }
 
-// Return list of logged in users
+// Return list of logged in users json format
 string GetJson::handleRequest(map<string, string> params) {
 
 	string result = "[";
@@ -158,7 +160,7 @@ string GetJson::handleRequest(map<string, string> params) {
 		}
 
 		if (iterator->second->loggedin)
-			result += "user:" + iterator->second->userName;
+			result += "{\"user\": \"" + iterator->second->userName + "\"}";
 	}
 
 	char slen[15];
