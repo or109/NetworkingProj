@@ -8,8 +8,8 @@ using namespace std ;
 
 class User {
 public:
-	string userName;
-	string userPassword;
+	string username;
+	string password;
 	string  ip;
 	int     port;
 	bool    loggedin;

@@ -76,7 +76,9 @@ LogIn::LogIn(CPDSService* CPDS) {
 	this->CPDS = CPDS;
 }
 
-// Login to user with password ip and port if user exist and not logged in
+
+
+// Login to user with password, ip and port
 string LogIn::handleRequest(map<string, string> params) {
 	string data;
 	map<string, string>::iterator user;
@@ -106,7 +108,7 @@ string LogIn::handleRequest(map<string, string> params) {
 			data = "ERROR - user does not exist";
 		} else if (this->CPDS->userList.find(username)->second->loggedin)
 			data = "ERROR user is already logged in";
-		else if (this->CPDS->userList.find(username)->second->userPassword
+		else if (this->CPDS->userList.find(username)->second->password
 				!= pass->second)
 			data = "ERROR - user password is incorrect";
 		else if (portInUse != this->CPDS->portList.end()) // TODO: get port list and scan it
@@ -144,7 +146,7 @@ string GetOnlineUsers::handleRequest(map<string, string> params) {
 	for (map<string, User*>::iterator iterator = CPDS->userList.begin();
 			iterator != CPDS->userList.end(); iterator++) {
 		if (iterator->second->loggedin)
-			result += "\n" + iterator->second->userName;
+			result += "\n" + iterator->second->username;
 	}
 	string message =
 			"HTTP/1.1 200 OK \r\nContent-Type: text/html; charset=utf8\r\nContent-Length: ";
@@ -163,8 +165,7 @@ GetJson::GetJson(CPDSService* CPDS) {
 
 // Return list of logged in users json format
 string GetJson::handleRequest(map<string, string> params) {
-
-	string result = "[";
+	string result = "{\"users\":[";
 	bool first = true;
 
 	CPDS->UpdateConnections();
@@ -172,16 +173,26 @@ string GetJson::handleRequest(map<string, string> params) {
 	for (map<string, User*>::iterator iterator = CPDS->userList.begin();
 			iterator != CPDS->userList.end(); iterator++) {
 		if (iterator->second->loggedin) {
+			char portStr[10] = "";
+			sprintf(portStr, "%d", iterator->second->port);
+
 			if (!first) {
 				result += ", ";
 			}
 			first = false;
-			result += "{\"user\": \"" + iterator->second->userName + "\"}";
+
+			result += "{\"name\": \"" + iterator->second->username + "\"";
+			result += ",\"password\": \"" + iterator->second->password + "\"";
+			result += ",\"ip\": \"" + iterator->second->ip + "\"";
+			result += ",\"port\":";
+			result += portStr;
+			result += ",\"lastLoginTime\": \"" + iterator->second->lastLoginTime + "\"";
+			result += "}";
 		}
 	}
 
 	char slen[15];
-	result += "]";
+	result += "]}";
 
 	// Get the Content-Length
 	sprintf(slen, "%d", (int) result.size());
@@ -258,7 +269,7 @@ string LogOut::handleRequest(map<string, string> params) {
 		if (this->CPDS->userList.find(user->second)
 				== this->CPDS->userList.end()) {
 			data = "ERROR - user is not exist!";
-		} else if (this->CPDS->userList.find(user->second)->second->userPassword
+		} else if (this->CPDS->userList.find(user->second)->second->password
 				!= pass->second)
 			data = "ERROR - user password is incorrect";
 		else if (this->CPDS->userList.find(user->second)->second->loggedin) {
@@ -295,7 +306,7 @@ string WebPortal::handleRequest(map<string, string> params) {
 	for (map<string, User*>::iterator iterator = CPDS->userList.begin();
 			iterator != CPDS->userList.end(); iterator++) {
 
-		data += "<tr><td>" + iterator->second->userName + "</td><td>";
+		data += "<tr><td>" + iterator->second->username + "</td><td>";
 		if (iterator->second->loggedin)
 			data += "Connected";
 		else

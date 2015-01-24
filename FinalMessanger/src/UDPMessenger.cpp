@@ -15,7 +15,7 @@
 using namespace std;
 
 // Get local IP from Linux OS
-string GetLocalIP() {
+string GetLocalIP1() {
 	int fd;
 	struct ifreq ifr;
 
@@ -106,13 +106,13 @@ string UDPMessenger::registerin(string user, string password) {
 
 // Login user to server
 string UDPMessenger::login(string user, string password) {
-	usr->userName = user;
-	usr->userPassword = password;
+	usr->username = user;
+	usr->password = password;
 
 	HTTPClient* CPDS = new HTTPClient(IP_ADDR"/login");
 	CPDS->setParam("user", user);
 	CPDS->setParam("password", password);
-	string localIp = GetLocalIP();
+	string localIp = GetLocalIP1();
 	CPDS->setParam("ip", localIp);
 
 	// Convert int to string
@@ -171,8 +171,8 @@ string UDPMessenger::getUserDetails(string user) {
 // Logout user
 string UDPMessenger::logout() {
 	HTTPClient* CPDS = new HTTPClient(IP_ADDR"/logout");
-	CPDS->setParam("user", usr->userName);
-	CPDS->setParam("password", usr->userPassword);
+	CPDS->setParam("user", usr->username);
+	CPDS->setParam("password", usr->password);
 
 	if (CPDS->sendGetRequest()) {
 		string response = CPDS->response();

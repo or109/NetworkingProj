@@ -1,8 +1,8 @@
 #include "User.h"
 
 User::User(string name, string password) {
-	this->userName = name;
-	this->userPassword = password;
+	this->username = name;
+	this->password = password;
 	this->loggedin = false;
 	this->ip = "";
 	this->port = 0;

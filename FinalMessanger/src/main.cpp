@@ -77,7 +77,7 @@ int main() {
 				if (strcmp(code, "OK") == 0) {
 					// Get IP and port and send message
 					sscanf(data, "%[^:]:%d", ip, port);
-					messenger->sendTo(messenger->usr->userName + " : " + msg,
+					messenger->sendTo(messenger->usr->username + " : " + msg,
 							ip, *port);
 				}
 				else {

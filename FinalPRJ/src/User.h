@@ -4,20 +4,20 @@
 #include <iostream>
 #include <string>
 
-using namespace std ;
-
+using namespace std;
 
 class User {
 public:
-	string userName;
-	string userPassword;
-	string  ip;
-	int     port;
-	bool    loggedin;
-	string     source;
+	string username;
+	string password;
+	string ip;
+	int port;
+	bool loggedin;
+	string source;
+	string lastLoginTime;
 
 	User(string name, string password);
-	void login(string ip, int port,string source);
+	void login(string ip, int port, string source);
 	void logout();
 	virtual ~User();
 };

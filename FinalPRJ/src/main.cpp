@@ -14,8 +14,7 @@
 
 using namespace std;
 
-// Get local IP from Linux OS
-static string GetLocalIP() {
+const std::string GetLocalIP() {
 	int fd;
 	struct ifreq ifr;
 	char iface[] = "eth0";
@@ -33,7 +32,8 @@ static string GetLocalIP() {
 }
 
 void printInstructions(string ip) {
-	cout << "=== Server REST API ===" << endl;
+	//cout << "Server is up - " << currentDateTime() << endl;
+	cout << "\n=== Server REST API ===" << endl;
 	cout << "http://" + ip + "/register?user=USERNAME&password=PASS" << endl;
 	cout << "http://" + ip + "/login?user=USERNAME&password=PASS" << endl;
 	cout << "http://" + ip + "/getonlineusers" << endl;
