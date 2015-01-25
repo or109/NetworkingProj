@@ -2,7 +2,6 @@
 #define MAIN_CPP_
 
 #include "UDPMessenger.h"
-
 #include <stdio.h>
 #include <string>
 
@@ -37,7 +36,7 @@ int main() {
 	string user;
 	string password;
 
-	// Read the input of the user and act accordingly
+	// Read the user input
 	while (true) {
 		cin >> command;
 
@@ -58,7 +57,7 @@ int main() {
 				if (strcmp(code, "OK") == 0) {
 					// Get IP and port and send message
 					sscanf(data, "%[^:]:%d", ip, port);
-					messenger->sendTo(messenger->usr->username + " : " + msg,
+					messenger->sendTo(messenger->usr->username + ": " + msg,
 							ip, *port);
 				} else {
 					cout << code << " " << data << endl;

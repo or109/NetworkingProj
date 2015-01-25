@@ -12,8 +12,10 @@ void Tokenize(const string& str, vector<string>& tokens,
 
 	while (string::npos != pos || string::npos != lastPos) {
 		// Found a token, add it to the vector.
+
 		tokens.push_back(str.substr(lastPos, pos - lastPos));
 		// Skip delimiters.  Note the "not_of"
+
 		lastPos = str.find_first_not_of(delimiters, pos);
 		// Find next "non-delimiter"
 		pos = str.find_first_of(delimiters, lastPos);
@@ -44,7 +46,6 @@ void PeersRequestsDispatcher::run() {
 		TCPSocket* peer = MTCPListener->listenToSocket();
 		if (peer != NULL) {
 			webServer->processRequestFromClient(peer);
-			//	webServer->peerDisconnect(peer);
 		}
 	}
 }
@@ -63,6 +64,7 @@ HTTPServer::HTTPServer(int port) {
 		this->isRunning = false;
 	}
 }
+
 /**
  * start the server
  */
@@ -71,6 +73,7 @@ void HTTPServer::start() {
 	dispatcher->start();
 	isRunning = true;
 }
+
 /**
  * close the server
  */
@@ -116,7 +119,6 @@ void HTTPServer::run() {
  */
 void HTTPServer::registerServlet(string url, HTTPServlet &servlet) {
 	servlets.insert(pair<string, HTTPServlet*>(url, &servlet));
-
 }
 
 /**
@@ -132,6 +134,7 @@ vector<TCPSocket*> HTTPServer::getPeersVec() {
 
 	return sokets;
 }
+
 /**
  * remove and delete the given peer
  */
@@ -141,6 +144,7 @@ void HTTPServer::peerDisconnect(TCPSocket* peer) {
 	peer->cclose();
 	delete peer;
 }
+
 /**
  * read requet from scoket, process the request according to the ritght servlet
  */
@@ -162,13 +166,11 @@ void HTTPServer::processRequestFromClient(TCPSocket* peer) {
 
 	if (rc != 0) {
 		sscanf(buffer, "%s %s %s", method, url, httpVer);
-
 		sscanf(url, "%[^?]?%s", uri, query);
-
 		querys.clear();
 		Tokenize(query, querys, "&");
-
 		params.clear();
+
 		for (vector<string>::iterator param = querys.begin();
 				param != querys.end(); ++param) {
 			sscanf(param->data(), "%[^=]=%s", p1, p2);
@@ -178,6 +180,7 @@ void HTTPServer::processRequestFromClient(TCPSocket* peer) {
 		sprintf(socket, "%d", peer->sock);
 		params.insert(pair<string, string>("source", ipport));
 		tHttpServlet::iterator servlet = servlets.find(uri);
+
 		if (servlet != servlets.end()) {
 			message = servlet->second->handleRequest(params);
 		} else {

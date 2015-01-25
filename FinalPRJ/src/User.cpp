@@ -27,7 +27,7 @@ void User::login(string ip, int port, string socket) {
 	this->loggedin = true;
 	this->source = socket;
 	this->lastLoginTime = currentDateTime1();
-	cout << "[" << this->lastLoginTime << "] new user on port: " + this->port;
+	cout << "[" << this->lastLoginTime << "] new user on port: " << this->port;
 }
 
 void User::logout() {

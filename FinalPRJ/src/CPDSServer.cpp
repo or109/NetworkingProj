@@ -26,7 +26,6 @@ CPDSSeever::CPDSSeever() {
 	}
 }
 
-// kill HTTP server
 CPDSSeever::~CPDSSeever() {
 	this->httpserver->kill();
 	cout << "Server is down. Bye Bye :)" << endl;
@@ -388,16 +387,26 @@ string WebPortal::handleRequest(map<string, string> params) {
 	CPDS->UpdateConnections();
 
 	string data =
-			"<!DOCTYPE html><html><head><title>WebPortal</title></head><body><table border=\"1\"><tr><th>User Name</th><th>Status</th></tr>";
+			"<!DOCTYPE html><html><head><title>WebPortal</title></head><body align=\"center\"><h1>Users status</h1><table border=\"1\" align=\"center\"><tr><th>Username</th><th>Status</th><th>IP Address</th><th>Port</th><th>Last Login</th></tr>";
 
 	for (map<string, User*>::iterator iterator = CPDS->userList.begin();
 			iterator != CPDS->userList.end(); iterator++) {
+		User* usr = iterator->second;
+		stringstream str;
+		string strPort ="";
 
-		data += "<tr><td>" + iterator->second->username + "</td><td>";
-		if (iterator->second->loggedin)
+		data += "<tr><td>" + usr->username + "</td><td>";
+		if (usr->loggedin)
+		{
 			data += "Connected";
+			str << usr->port;
+			strPort = str.str();
+		}
 		else
 			data += "Disconnected";
+		data += "<td>" + usr->ip + "</td>";
+		data += "<td>" + strPort + "</td>";
+		data += "<td>" + usr->lastLoginTime + "</td>";
 		data += "</td></tr>";
 	}
 	data += "</table></body></html>";

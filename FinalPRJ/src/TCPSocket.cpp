@@ -1,16 +1,22 @@
 #include "TCPSocket.h"
+
 #include <iostream>
-#include <sys/types.h>
-#include <netinet/in.h>
-#include <inttypes.h>
-#include <arpa/inet.h>
-#include <netdb.h>
+#include <string.h>
+#include <strings.h>
+#include <stdio.h>
+
 #include <sys/types.h>
 #include <sys/socket.h>
-#include <strings.h>
+#include <sys/fcntl.h>
+#include <sys/types.h>
+
+#include <inttypes.h>
+#include <netdb.h>
+#include <netinet/in.h>
+#include <netinet/tcp.h>
+#include <arpa/inet.h>
 #include <unistd.h>
-#include <stdio.h>
-#include <string.h>
+
 
 using namespace std;
 
@@ -37,6 +43,18 @@ TCPSocket::TCPSocket(int connected_sock, struct sockaddr_in serverAddr,
 TCPSocket::TCPSocket(int port) {
 	// Open TCP socket
 	sock = socket(AF_INET, SOCK_STREAM, 0);
+
+	// re-use already bound address/port (if possible)
+	int optval = 1;
+	if (setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof(int)) < 0)
+		printf("Cannot set SO_REUSEADDR option "
+			   "on listen socket (%s)\n", strerror(errno));
+	// set TCP_NODELAY for sure
+	optval = 1;
+	if (setsockopt(sock, IPPROTO_TCP, TCP_NODELAY, &optval, sizeof(int)) < 0)
+		printf("Cannot set TCP_NODELAY option "
+			   "on listen socket (%s)\n", strerror(errno));
+
 	if (sock < 0) {
 		perror("Error opening channel");
 		cclose();
