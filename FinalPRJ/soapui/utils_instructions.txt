@@ -13,3 +13,12 @@ http://sourceforge.net/projects/sockettest/files/latest/download
 
 SoapUI
 http://sourceforge.net/projects/soapui/files/soapui/5.0.0/
+
+Github Repo
+https://github.com/or109/NetworkingProj.git
+
+Advanced REST client
+https://chrome.google.com/webstore/detail/advanced-rest-client/hgmloofddffdnphfgcellkdfbfbjeloo?utm_source=chrome-app-launcher-info-dialog
+
+JSON Editor
+https://chrome.google.com/webstore/detail/json-editor/lhkmoheomjbkfloacpgllgjcamhihfaj?utm_source=chrome-app-launcher-info-dialog
