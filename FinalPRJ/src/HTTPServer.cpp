@@ -59,6 +59,9 @@ HTTPServer::HTTPServer(int port) {
 	this->soket = new TCPSocket(port);
 	this->dispatcher = new PeersRequestsDispatcher(this);
 
+	if (!this->soket->isOpen) {
+		this->isRunning = false;
+	}
 }
 /**
  * start the server
@@ -66,12 +69,14 @@ HTTPServer::HTTPServer(int port) {
 void HTTPServer::start() {
 	MThread::start();
 	dispatcher->start();
+	isRunning = true;
 }
 /**
  * close the server
  */
 void HTTPServer::kill() {
 	soket->cclose();
+	isRunning = false;
 
 	dispatcher->~MThread();
 

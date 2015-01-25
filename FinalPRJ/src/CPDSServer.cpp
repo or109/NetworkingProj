@@ -10,18 +10,20 @@ bool String2Int(const std::string& str, int& result) {
 CPDSSeever::CPDSSeever() {
 	httpserver = new HTTPServer(LISTENING_PORT);
 
-	// Register all the servlets
-	httpserver->registerServlet("/register", *(new Register(this)));
-	httpserver->registerServlet("/login", *(new LogIn(this)));
-	httpserver->registerServlet("/onlineusers", *(new GetOnlineUsers(this)));
-	httpserver->registerServlet("/userdetails", *(new GetUserDetails(this)));
-	httpserver->registerServlet("/logout", *(new LogOut(this)));
-	httpserver->registerServlet("/webportal.html", *(new WebPortal(this)));
-	httpserver->registerServlet("/getjson", *(new GetJson(this)));
-	httpserver->registerServlet("/allusers", *(new GetAllUsers(this)));
+	if (httpserver->isRunning) {
+		// Register all the servlets
+		httpserver->registerServlet("/register", *(new Register(this)));
+		httpserver->registerServlet("/login", *(new LogIn(this)));
+		httpserver->registerServlet("/onlineusers",*(new GetOnlineUsers(this)));
+		httpserver->registerServlet("/userdetails",*(new GetUserDetails(this)));
+		httpserver->registerServlet("/logout", *(new LogOut(this)));
+		httpserver->registerServlet("/webportal.html", *(new WebPortal(this)));
+		httpserver->registerServlet("/getjson", *(new GetJson(this)));
+		httpserver->registerServlet("/allusers", *(new GetAllUsers(this)));
 
-	// Start HTTP server
-	httpserver->start();
+		// Start HTTP server
+		httpserver->start();
+	}
 }
 
 // kill HTTP server
@@ -95,7 +97,7 @@ string LogIn::handleRequest(map<string, string> params) {
 	map<string, string>::iterator ip;
 	map<string, string>::iterator port;
 	map<string, string>::iterator source;
-	map<string, string>::iterator portInUse;
+	//map<string, string>::iterator portInUse;
 	int iport = 0;
 
 	CPDS->UpdateConnections();
@@ -105,9 +107,6 @@ string LogIn::handleRequest(map<string, string> params) {
 	ip = params.find("ip");
 	port = params.find("port");
 	string username = user->second;
-	string ipPort = ip->second + ":" + port->second;
-
-	portInUse = this->CPDS->portList.find(ip->second + ":" + port->second);
 
 	if (user == params.end() || pass == params.end() || ip == params.end()
 			|| port == params.end()) {
@@ -120,16 +119,22 @@ string LogIn::handleRequest(map<string, string> params) {
 		else if (this->CPDS->userList.find(username)->second->password
 				!= pass->second)
 			data = "ERROR - user password is incorrect";
-		else if (portInUse != this->CPDS->portList.end()) // TODO: get port list and scan it
-			data = "ERROR - port " + ipPort + " is already in use";
 		else {
-			this->CPDS->portList.insert(
-					pair<string, string>(ipPort, "ip:port"));
+			string ipPort = ip->second + ":" + port->second;
+			bool isPortInUse = this->CPDS->portList.find(ipPort)
+					!= this->CPDS->portList.end();
 
-			String2Int(port->second, iport);
-			this->CPDS->userList.find(username)->second->login(ip->second,
-					iport, source->second);
-			data = "OK user logged in";
+			if (isPortInUse)
+				data = "ERROR - port " + ipPort + " is already in use";
+			else {
+				this->CPDS->portList.insert(
+						pair<string, string>(ipPort, "ip:port"));
+
+				String2Int(port->second, iport);
+				this->CPDS->userList.find(username)->second->login(ip->second,
+						iport, source->second);
+				data = "OK user logged in";
+			}
 		}
 	}
 	string message =

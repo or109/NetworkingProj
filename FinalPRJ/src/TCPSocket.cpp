@@ -26,32 +26,34 @@ const std::string currentDateTime() {
 
 TCPSocket::TCPSocket(int connected_sock, struct sockaddr_in serverAddr,
 		struct sockaddr_in peerAddr) {
-	cout << "new socket created" << endl;
+	cout << "New socket created" << endl;
 	this->sock = connected_sock;
 	this->serv_name = serverAddr;
 	this->peer_addr = peerAddr;
 }
 
-TCPSocket::TCPSocket(int port) {	//for server
-	//TODO: open TCP socket
+TCPSocket::TCPSocket(int port) {
+	// Open TCP socket
 	sock = socket(AF_INET, SOCK_STREAM, 0);
 	if (sock < 0) {
 		perror("Error opening channel");
 		cclose();
 	}
 
-	//TODO: set the server address for binding
+	// Set the server address for binding
 	bzero(&serv_name, sizeof(serv_name));
 	serv_name.sin_family = AF_INET;
 	serv_name.sin_port = htons(port);
 
-	//TODO: bind the socket to the address
+	// Bind the socket to the address
 	if (bind(sock, (struct sockaddr *) &serv_name, sizeof(serv_name)) < 0) {
 		perror("Error naming channel");
+		cerr << "Server is down" << endl;
 		cclose();
+	} else {
+		this->isOpen = true;
+		cout << currentDateTime() + " - Server is up\n";
 	}
-
-	cout << currentDateTime() + " - Server is up\n";
 }
 
 TCPSocket::TCPSocket(string peerIp, int port) {    //for client
@@ -67,11 +69,13 @@ TCPSocket::TCPSocket(string peerIp, int port) {    //for client
 	peer_addr.sin_family = (short) AF_INET;
 	peer_addr.sin_addr.s_addr = inet_addr(peerIp.data());
 	peer_addr.sin_port = htons(port);
+	this->isOpen = true;
 	//TODO: connect the socket to the peer server
 
 	if (connect(sock, (struct sockaddr *) &peer_addr, sizeof(peer_addr)) < 0) {
 		perror("Error establishing communications");
 		cclose();
+		this->isOpen = false;
 	}
 }
 
@@ -110,6 +114,7 @@ int TCPSocket::send(const char* msg, int len) {
 void TCPSocket::cclose() {
 	shutdown(sock, SHUT_RDWR);
 	close(sock);
+	this->isOpen = false;
 }
 
 string TCPSocket::fromAddr() {

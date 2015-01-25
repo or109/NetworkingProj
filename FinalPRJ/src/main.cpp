@@ -32,17 +32,25 @@ const std::string GetLocalIP() {
 	return inet_ntoa(((struct sockaddr_in *) &ifr.ifr_addr)->sin_addr);
 }
 
-void printInstructions(string ip) {
+void PrintMenu(string ip) {
 	stringstream str;
 	str << LISTENING_PORT;
 	string portStr = str.str();
 
 	cout << "\n=== Server REST API ===" << endl;
-	cout << "http://" + ip + ":" + portStr + "/register?user=USERNAME&password=PASS" << endl;
-	cout << "http://" + ip + ":" + portStr + "/login?user=USERNAME&password=PASS&ip=IP&port=PORT" << endl;
+	cout
+			<< "http://" + ip + ":" + portStr
+					+ "/register?user=USERNAME&password=PASS" << endl;
+	cout
+			<< "http://" + ip + ":" + portStr
+					+ "/login?user=USERNAME&password=PASS&ip=IP&port=PORT"
+			<< endl;
 	cout << "http://" + ip + ":" + portStr + "/onlineusers" << endl;
-	cout << "http://" + ip + ":" + portStr + "/userdetails?user=USERNAME" << endl;
-	cout << "http://" + ip + ":" + portStr + "/logout?user=USERNAME&password=PASS" << endl;
+	cout << "http://" + ip + ":" + portStr + "/userdetails?user=USERNAME"
+			<< endl;
+	cout
+			<< "http://" + ip + ":" + portStr
+					+ "/logout?user=USERNAME&password=PASS" << endl;
 	cout << "http://" + ip + ":" + portStr + "/webportal.html" << endl;
 	cout << "http://" + ip + ":" + portStr + "/getjson" << endl;
 }
@@ -50,16 +58,19 @@ void printInstructions(string ip) {
 int main() {
 	CPDSSeever* CPDS = new CPDSSeever();
 
-	printInstructions(GetLocalIP());
+	if (CPDS->httpserver->isRunning) {
+		PrintMenu(GetLocalIP());
 
-	while (true) {
-		string msg;
-		cin >> msg;
+		while (true) {
+			string msg;
+			cin >> msg;
 
-		if (msg == "x") {
-			break;
+			if (msg == "x") {
+				break;
+			}
 		}
 	}
+
 	CPDS->~CPDSSeever();
 
 	return 0;

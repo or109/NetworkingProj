@@ -21,7 +21,6 @@ public:
 };
 
 // Servlets classes for the HTTP server register.
-
 class Register: public HTTPServlet {
 public:
 	CPDSSeever* CPDS;
@@ -52,7 +51,7 @@ public:
 	;
 };
 
-// TESTTTTTTTTTTTTTTTTtt
+// Get all logged in user in json format
 class GetJson: public HTTPServlet {
 public:
 	CPDSSeever* CPDS;
@@ -63,7 +62,7 @@ public:
 	;
 };
 
-// TESTTTTTTTTTTTTTTTTtt
+// Get all users in json format
 class GetAllUsers: public HTTPServlet {
 public:
 	CPDSSeever* CPDS;

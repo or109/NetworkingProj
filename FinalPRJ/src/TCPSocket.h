@@ -15,19 +15,20 @@
 
 using namespace std;
 
-class TCPSocket{
-    struct sockaddr_in serv_name;
-    struct sockaddr_in peer_addr;
-
+class TCPSocket {
+	struct sockaddr_in serv_name;
+	struct sockaddr_in peer_addr;
 
 private:
 	/**
 	 * private constructor to create a secondary server socket to communicate with a remote peer
 	 */
-	TCPSocket(int connected_sock,struct sockaddr_in serverAddr,struct sockaddr_in peerAddr);
+	TCPSocket(int connected_sock, struct sockaddr_in serverAddr,
+			struct sockaddr_in peerAddr);
 
 public:
-    int sock;
+	int sock;
+	bool isOpen = true;
 	/**
 	 * Constructor create a TCP server socket
 	 */
@@ -62,7 +63,6 @@ public:
 	 * return the address of the connected peer
 	 */
 	string fromAddr();
-
 
 	int getFileDescriptor();
 	string fromPort();
