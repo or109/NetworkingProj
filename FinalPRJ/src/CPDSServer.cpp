@@ -18,6 +18,7 @@ CPDSSeever::CPDSSeever() {
 	httpserver->registerServlet("/logout", *(new LogOut(this)));
 	httpserver->registerServlet("/webportal.html", *(new WebPortal(this)));
 	httpserver->registerServlet("/getjson", *(new GetJson(this)));
+	httpserver->registerServlet("/allusers", *(new GetAllUsers(this)));
 
 	// Start HTTP server
 	httpserver->start();
@@ -199,6 +200,63 @@ string GetJson::handleRequest(map<string, string> params) {
 					+ "\"";
 			result += "}";
 		}
+	}
+
+	char slen[15];
+	result += "]}";
+
+	// Get the Content-Length
+	sprintf(slen, "%d", (int) result.size());
+
+	string message =
+			"HTTP/1.1 200 OK \r\nContent-Type: application/json; charset=utf-8\r\nContent-Length: ";
+	message += slen;
+	message += "\r\n\r\n";
+	message += result;
+
+	return message;
+}
+
+//Init CPDS to servlet
+GetAllUsers::GetAllUsers(CPDSSeever* CPDS) {
+	this->CPDS = CPDS;
+}
+
+// Return list of logged in users json format
+string GetAllUsers::handleRequest(map<string, string> params) {
+	string result = "{\"users\":[";
+	bool first = true;
+
+	CPDS->UpdateConnections();
+
+	for (map<string, User*>::iterator iterator = CPDS->userList.begin();
+			iterator != CPDS->userList.end(); iterator++) {
+		char portStr[10] = "0";
+		string ipAddr = "";
+
+		/*if (iterator->second->loggedin) {
+		 sprintf(portStr, "%d", iterator->second->port);
+		 ipAddr = iterator->second->ip;
+		 }*/
+		if (!first) {
+			result += ", ";
+		}
+		first = false;
+
+		result += "{\"name\": \"" + iterator->second->username + "\"";
+		result += ",\"password\": \"" + iterator->second->password + "\"";
+		if (iterator->second->loggedin) {
+			sprintf(portStr, "%d", iterator->second->port);
+			ipAddr = iterator->second->ip;
+
+			result += ",\"ip\": \"" + ipAddr + "\"";
+			result += ",\"port\":";
+			result += portStr;
+		}
+
+		result += ",\"lastLoginTime\": \"" + iterator->second->lastLoginTime
+				+ "\"";
+		result += "}";
 	}
 
 	char slen[15];

@@ -63,6 +63,17 @@ public:
 	;
 };
 
+// TESTTTTTTTTTTTTTTTTtt
+class GetAllUsers: public HTTPServlet {
+public:
+	CPDSSeever* CPDS;
+	GetAllUsers(CPDSSeever* CPDS);
+	virtual string handleRequest(map<string, string> params);
+	virtual ~GetAllUsers() {
+	}
+	;
+};
+
 class GetUserDetails: public HTTPServlet {
 public:
 	CPDSSeever* CPDS;
