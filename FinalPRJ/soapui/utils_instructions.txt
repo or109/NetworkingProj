@@ -1,0 +1,15 @@
+=== Server REST API ===
+http://192.168.153.132:22225/register?user=USERNAME&password=PASS
+http://192.168.153.132:22225/login?user=USERNAME&password=PASS&ip=IP&port=PORT
+http://192.168.153.132:22225/onlineusers
+http://192.168.153.132:22225/userdetails?user=USERNAME
+http://192.168.153.132:22225/logout?user=USERNAME&password=PASS
+http://192.168.153.132:22225/webportal.html
+http://192.168.153.132:22225/onlineusers.json
+http://192.168.153.132:22225/allusers.json
+
+SocketTest
+http://sourceforge.net/projects/sockettest/files/latest/download
+
+SoapUI
+http://sourceforge.net/projects/soapui/files/soapui/5.0.0/
