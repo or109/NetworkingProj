@@ -41,26 +41,7 @@ int main() {
 	while (true) {
 		cin >> command;
 
-		if (command == "register") {
-			cin >> user;
-			cin >> password;
-
-			cout << messenger->registerin(user, password) << endl;
-		} else if (command == "login") {
-			cin >> user;
-			cin >> password;
-
-			// Check if user logged in
-			if (messenger->usr->loggedin)
-				cout << "You are already logged in." << endl;
-			else
-				cout << messenger->login(user, password) << endl;
-		} else if (command == "l") {
-			cout << messenger->getUserList() << endl;
-		} else if (command == "d") {
-			cin >> user;
-			cout << messenger->getUserDetails(user) << endl;
-		} else if (command == "s") {
+		if (command == "s") {
 			cin >> user;
 			getline(std::cin, msg);
 			if (msg.size() > 0 && msg[0] == ' ')
@@ -79,8 +60,7 @@ int main() {
 					sscanf(data, "%[^:]:%d", ip, port);
 					messenger->sendTo(messenger->usr->username + " : " + msg,
 							ip, *port);
-				}
-				else {
+				} else {
 					cout << code << " " << data << endl;
 				}
 			}
@@ -90,6 +70,26 @@ int main() {
 						<< "ERROR - for sending messages you must first logging in."
 						<< endl;
 
+		} else if (command == "register") {
+			cin >> user;
+			cin >> password;
+
+			cout << messenger->registerin(user, password) << endl;
+		} else if (command == "login") {
+			cin >> user;
+			cin >> password;
+
+			// Check if user logged in
+			if (messenger->usr->loggedin)
+				cout << "You are already logged in with user - "
+						<< messenger->usr->username << endl;
+			else
+				cout << messenger->login(user, password) << endl;
+		} else if (command == "l") {
+			cout << messenger->getUserList() << endl;
+		} else if (command == "d") {
+			cin >> user;
+			cout << messenger->getUserDetails(user) << endl;
 		} else if (command == "x") {
 			break;
 		} else {
@@ -99,6 +99,7 @@ int main() {
 	}
 
 	// Close messenger application
+	cout << "before messenger->close();"<< endl;
 	messenger->close();
 	delete messenger;
 	cout << "Bye bye :)" << endl;

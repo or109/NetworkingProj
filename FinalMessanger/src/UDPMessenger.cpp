@@ -170,10 +170,12 @@ string UDPMessenger::getUserDetails(string user) {
 
 // Logout user
 string UDPMessenger::logout() {
+	cout << "if (new HTTPClient(IP_ADDR/logout)" << endl;
 	HTTPClient* CPDS = new HTTPClient(IP_ADDR"/logout");
 	CPDS->setParam("user", usr->username);
 	CPDS->setParam("password", usr->password);
 
+	cout << "if (CPDS->sendGetRequest())" << endl;
 	if (CPDS->sendGetRequest()) {
 		string response = CPDS->response();
 		string body = response.substr(response.find("\r\n\r\n") + 4);

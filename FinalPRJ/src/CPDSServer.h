@@ -17,6 +17,7 @@ public:
 	CPDSSeever();
 	virtual ~CPDSSeever();
 	void UpdateConnections();
+	void PrintAllUsedPorts();
 };
 
 // Servlets classes for the HTTP server register.

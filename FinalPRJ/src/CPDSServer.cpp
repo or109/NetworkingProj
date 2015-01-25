@@ -26,6 +26,7 @@ CPDSSeever::CPDSSeever() {
 // kill HTTP server
 CPDSSeever::~CPDSSeever() {
 	this->httpserver->kill();
+	cout << "Server is down. Bye Bye :)" << endl;
 }
 
 void CPDSSeever::UpdateConnections() {
@@ -35,6 +36,13 @@ void CPDSSeever::UpdateConnections() {
 			if (httpserver->openedPeers.find(iterator->second->source)
 					== httpserver->openedPeers.end())
 				iterator->second->logout();
+	}
+}
+
+void CPDSSeever::PrintAllUsedPorts() {
+	for (map<string, string>::iterator iterator = portList.begin();
+			iterator != portList.end(); iterator++) {
+		cout << iterator->first << endl;
 	}
 }
 
@@ -155,6 +163,7 @@ string GetOnlineUsers::handleRequest(map<string, string> params) {
 	message += slen;
 	message += "\r\n\r\n";
 	message += result;
+
 	return message;
 }
 
@@ -258,7 +267,7 @@ LogOut::LogOut(CPDSSeever* CPDS) {
 
 // Login to user if user exist and logged in
 string LogOut::handleRequest(map<string, string> params) {
-	CPDS->UpdateConnections();
+	CPDS->UpdateConnections(); //TODO: realse ports here
 	map<string, string>::iterator user, pass;
 	string data;
 	user = params.find("user");
@@ -275,19 +284,14 @@ string LogOut::handleRequest(map<string, string> params) {
 			data = "ERROR - user password is incorrect";
 		else if (this->CPDS->userList.find(user->second)->second->loggedin) {
 			User* usr = this->CPDS->userList.find(user->second)->second;
-			usr->logout();
-			map<string, string>::iterator portInUse;
 
 			stringstream str;
 			str << usr->ip << ":" << usr->port;
 			string str1 = str.str();
-			cout << str1 << endl;
-			//string ipPort = usr->ip + ":" + usr->port;
 
-			portInUse = this->CPDS->portList.find(str1);
-			this->CPDS->portList.erase(portInUse);
 			this->CPDS->portList.erase(str1);
-
+			//CPDS->PrintAllUsedPorts();
+			usr->logout();
 			data = "OK user:" + usr->username + " logged out";
 		} else {
 			data = "ERROR - user is already logged out";

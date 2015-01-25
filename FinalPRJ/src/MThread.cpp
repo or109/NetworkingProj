@@ -26,11 +26,10 @@ void MThread::waitForThread(){
 	threadId=0;
 }
 
+// Kills the thread if exist
 MThread::~MThread(){
 	if (threadId>0){
-		//kills the thread if exist
 		pthread_cancel(threadId);
-		printf("Thread was canceled\n");
 	}
 }
 
