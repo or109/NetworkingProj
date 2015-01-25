@@ -14,7 +14,7 @@ using namespace std;
 
 TCPSocket::TCPSocket(int connected_sock, struct sockaddr_in serverAddr,
 		struct sockaddr_in peerAddr) {
-	cout << "new socket created" << endl;
+	cout << "Created new socket" << endl;
 	this->sock = connected_sock;
 	this->serv_name = serverAddr;
 	this->peer_addr = peerAddr;
@@ -78,8 +78,8 @@ TCPSocket* TCPSocket::listenAndAccept() {
 	if (connect_sock < 0) {
 		return NULL;
 	}
-	cout << "conneted socket fd: " << connect_sock << endl;
-	//TODO: return new TCPSocket object holding the new secondary server socket returned from the accept call
+	cout << "Connected socket fd: " << connect_sock << endl;
+
 	return new TCPSocket(connect_sock, serv_name, peer_addr);
 }
 

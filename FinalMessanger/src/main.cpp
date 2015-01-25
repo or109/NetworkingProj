@@ -57,7 +57,8 @@ int main() {
 				if (strcmp(code, "OK") == 0) {
 					// Get IP and port and send message
 					sscanf(data, "%[^:]:%d", ip, port);
-					messenger->sendTo(messenger->usr->username + ": " + msg,
+					//cout << user << " "<< "data: " << data << ", ip: " << ip << endl;
+					messenger->sendTo(messenger->usr->username + " : " + msg,
 							ip, *port);
 				} else {
 					cout << code << " " << data << endl;
@@ -98,7 +99,6 @@ int main() {
 	}
 
 	// Close messenger application
-	cout << "before messenger->close();"<< endl;
 	messenger->close();
 	delete messenger;
 	cout << "Bye bye :)" << endl;

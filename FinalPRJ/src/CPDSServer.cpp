@@ -129,10 +129,6 @@ string LogIn::handleRequest(map<string, string> params) {
 			bool isPortInUse = this->CPDS->portList.find(ipPort)
 					!= this->CPDS->portList.end();
 
-			// TODO: FIX IT !!
-			this->CPDS->PrintAllUsedPorts();
-			// TODO: FIX IT !!
-
 			if (isPortInUse)
 				data = "ERROR - port " + ipPort + " is already in use";
 			else {
@@ -310,9 +306,11 @@ string GetUserDetails::handleRequest(map<string, string> params) {
 			sprintf(portStr, "%d",
 					this->CPDS->userList.find(username)->second->port);
 
-			result += "User: " + username + ", IP: "
-					+ this->CPDS->userList.find(username)->second->ip
-					+ ", Port:" + portStr;
+			//result += "User: " + username + ", IP: "
+			//		+ this->CPDS->userList.find(username)->second->ip
+			//		+ ", Port:" + portStr;
+			result += this->CPDS->userList.find(user->second)->second->ip + ":"
+								+ portStr;
 
 		} else
 			result = "ERROR - user is not logged in";
@@ -336,7 +334,7 @@ LogOut::LogOut(CPDSSeever* CPDS) {
 
 // Login to user if user exist and logged in
 string LogOut::handleRequest(map<string, string> params) {
-	CPDS->UpdateConnections(); //TODO: realse ports here
+	CPDS->UpdateConnections();
 	map<string, string>::iterator user, pass;
 	string data;
 	user = params.find("user");
@@ -359,7 +357,6 @@ string LogOut::handleRequest(map<string, string> params) {
 			string str1 = str.str();
 
 			this->CPDS->portList.erase(str1);
-			//CPDS->PrintAllUsedPorts();
 			usr->logout();
 			data = "OK user:" + usr->username + " logged out";
 		} else {
@@ -398,12 +395,12 @@ string WebPortal::handleRequest(map<string, string> params) {
 		data += "<tr><td>" + usr->username + "</td><td>";
 		if (usr->loggedin)
 		{
-			data += "Connected";
+			data += "<font color=\"green\">Connected</font>";
 			str << usr->port;
 			strPort = str.str();
 		}
 		else
-			data += "Disconnected";
+			data += "<font color=\"red\">Disconnected</font>";
 		data += "<td>" + usr->ip + "</td>";
 		data += "<td>" + strPort + "</td>";
 		data += "<td>" + usr->lastLoginTime + "</td>";
