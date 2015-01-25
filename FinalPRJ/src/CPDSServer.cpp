@@ -18,8 +18,8 @@ CPDSSeever::CPDSSeever() {
 		httpserver->registerServlet("/userdetails",*(new GetUserDetails(this)));
 		httpserver->registerServlet("/logout", *(new LogOut(this)));
 		httpserver->registerServlet("/webportal.html", *(new WebPortal(this)));
-		httpserver->registerServlet("/getjson", *(new GetJson(this)));
-		httpserver->registerServlet("/allusers", *(new GetAllUsers(this)));
+		httpserver->registerServlet("/onlineusers.json", *(new GetJson(this)));
+		httpserver->registerServlet("/allusers.json", *(new GetAllUsers(this)));
 
 		// Start HTTP server
 		httpserver->start();
@@ -384,7 +384,7 @@ string WebPortal::handleRequest(map<string, string> params) {
 	CPDS->UpdateConnections();
 
 	string data =
-			"<!DOCTYPE html><html><head><title>WebPortal</title></head><body align=\"center\"><h1>Users status</h1><table border=\"1\" align=\"center\"><tr><th>Username</th><th>Status</th><th>IP Address</th><th>Port</th><th>Last Login</th></tr>";
+			"<!DOCTYPE html><html><head><title>WebPortal</title></head><body align=\"center\"><h1>Users status</h1><table border=\"1\" align=\"center\"><tr><th>Username</th><th>Status</th><th>IP Address</th><th>Port</th><th>Last Login</th><th>Logout</th></tr>";
 
 	for (map<string, User*>::iterator iterator = CPDS->userList.begin();
 			iterator != CPDS->userList.end(); iterator++) {
@@ -404,6 +404,9 @@ string WebPortal::handleRequest(map<string, string> params) {
 		data += "<td>" + usr->ip + "</td>";
 		data += "<td>" + strPort + "</td>";
 		data += "<td>" + usr->lastLoginTime + "</td>";
+		// onClick="location.href=index.html"
+		//parent.location='/logout?username=1&password=5'
+		data += "<td><input type=\"button\" value=\"Logout\" onClick=\"parent.location='logout?user="+usr->username+"&password=" + usr->password + "'\" /></td>";
 		data += "</td></tr>";
 	}
 	data += "</table></body></html>";

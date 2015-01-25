@@ -44,8 +44,8 @@ void PrintMenu(string ip) {
 	cout << "http://" + ip + ":" + portStr + "/userdetails?user=USERNAME" << endl;
 	cout << "http://" + ip + ":" + portStr + "/logout?user=USERNAME&password=PASS" << endl;
 	cout << "http://" + ip + ":" + portStr + "/webportal.html" << endl;
-	cout << "http://" + ip + ":" + portStr + "/getjson" << endl;
-	cout << "http://" + ip + ":" + portStr + "/allusers" << endl;
+	cout << "http://" + ip + ":" + portStr + "/onlineusers.json" << endl;
+	cout << "http://" + ip + ":" + portStr + "/allusers.json" << endl;
 }
 
 int main() {
