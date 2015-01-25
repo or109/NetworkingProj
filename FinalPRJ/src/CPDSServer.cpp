@@ -42,9 +42,8 @@ void CPDSSeever::UpdateConnections() {
 				str << iterator->second->ip << ":" << iterator->second->port;
 				string str1 = str.str();
 				this->portList.erase(str1);
+				iterator->second->logout();
 			}
-		iterator->second->logout();
-
 	}
 }
 
