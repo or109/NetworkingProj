@@ -37,8 +37,14 @@ void CPDSSeever::UpdateConnections() {
 			iterator != userList.end(); iterator++) {
 		if (iterator->second->loggedin)
 			if (httpserver->openedPeers.find(iterator->second->source)
-					== httpserver->openedPeers.end())
-				iterator->second->logout();
+					== httpserver->openedPeers.end()) {
+				stringstream str;
+				str << iterator->second->ip << ":" << iterator->second->port;
+				string str1 = str.str();
+				this->portList.erase(str1);
+			}
+		iterator->second->logout();
+
 	}
 }
 
@@ -121,8 +127,13 @@ string LogIn::handleRequest(map<string, string> params) {
 			data = "ERROR - user password is incorrect";
 		else {
 			string ipPort = ip->second + ":" + port->second;
+			cout << "this port is use? -> " << ipPort << endl;
 			bool isPortInUse = this->CPDS->portList.find(ipPort)
 					!= this->CPDS->portList.end();
+
+			// TODO: FIX IT !!
+			this->CPDS->PrintAllUsedPorts();
+			// TODO: FIX IT !!
 
 			if (isPortInUse)
 				data = "ERROR - port " + ipPort + " is already in use";
@@ -239,10 +250,6 @@ string GetAllUsers::handleRequest(map<string, string> params) {
 		char portStr[10] = "0";
 		string ipAddr = "";
 
-		/*if (iterator->second->loggedin) {
-		 sprintf(portStr, "%d", iterator->second->port);
-		 ipAddr = iterator->second->ip;
-		 }*/
 		if (!first) {
 			result += ", ";
 		}
@@ -250,6 +257,7 @@ string GetAllUsers::handleRequest(map<string, string> params) {
 
 		result += "{\"name\": \"" + iterator->second->username + "\"";
 		result += ",\"password\": \"" + iterator->second->password + "\"";
+
 		if (iterator->second->loggedin) {
 			sprintf(portStr, "%d", iterator->second->port);
 			ipAddr = iterator->second->ip;

@@ -50,7 +50,7 @@ private:
 public:
 	typedef map<string, TCPSocket*> tOpenedPeers;
 	tOpenedPeers openedPeers;
-	bool isRunning = false;
+	bool isRunning = true;
 
 	/**
 	 * Construct a TCP web server socket
