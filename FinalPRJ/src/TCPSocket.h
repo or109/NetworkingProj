@@ -66,6 +66,7 @@ public:
 
 	int getFileDescriptor();
 	string fromPort();
+	virtual ~TCPSocket();
 };
 
 #endif

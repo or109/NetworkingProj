@@ -1,3 +1,4 @@
+#include "TCPSocket.h"
 #include <iostream>
 #include <sys/types.h>
 #include <netinet/in.h>
@@ -9,7 +10,8 @@
 #include <strings.h>
 #include <unistd.h>
 #include <stdio.h>
-#include "TCPSocket.h"
+#include <string.h>
+
 using namespace std;
 
 const std::string currentDateTime() {
@@ -64,13 +66,13 @@ TCPSocket::TCPSocket(string peerIp, int port) {    //for client
 		cclose();
 	}
 
-	//TODO: set the peer address to connect to
+	// Set the peer address to connect to
 	bzero(&peer_addr, sizeof(peer_addr));
 	peer_addr.sin_family = (short) AF_INET;
 	peer_addr.sin_addr.s_addr = inet_addr(peerIp.data());
 	peer_addr.sin_port = htons(port);
 	this->isOpen = true;
-	//TODO: connect the socket to the peer server
+	// Connect the socket to the peer server
 
 	if (connect(sock, (struct sockaddr *) &peer_addr, sizeof(peer_addr)) < 0) {
 		perror("Error establishing communications");
@@ -132,4 +134,23 @@ string TCPSocket::fromPort() {
 
 int TCPSocket::getFileDescriptor() {
 	return this->sock;
+}
+
+TCPSocket::~TCPSocket() {
+	int serverfd;
+	serverfd = socket(AF_INET, SOCK_STREAM, 0);
+
+	// Free sockaddr_in serv_name
+	memset(&this->serv_name, 0, sizeof(this->serv_name));
+	this->serv_name.sin_family = AF_INET;
+	this->serv_name.sin_addr.s_addr = INADDR_ANY;
+	bind(serverfd, (sockaddr *) &this->serv_name, sizeof(this->serv_name));
+
+	// Free sockaddr_in peer_addr
+	memset(&this->peer_addr, 0, sizeof(this->peer_addr));
+	this->peer_addr.sin_family = AF_INET;
+	this->peer_addr.sin_addr.s_addr = INADDR_ANY;
+	bind(serverfd, (sockaddr *) &this->peer_addr, sizeof(this->peer_addr));
+
+	cout << "Bye Bye TCPSocket" << endl;
 }
