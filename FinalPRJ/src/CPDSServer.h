@@ -6,16 +6,16 @@
 #include <map>
 #include "User.h"
 
-class CPDSService {
+class CPDSSeever {
 public:
 
 	HTTPServer* httpserver;
 	typedef map<string, User*> tUserList;
 	tUserList userList;
-	map<string, string> portList;//TODO: use a reference to user
+	map<string, string> portList;
 
-	CPDSService();
-	virtual ~CPDSService();
+	CPDSSeever();
+	virtual ~CPDSSeever();
 	void UpdateConnections();
 };
 
@@ -23,8 +23,8 @@ public:
 
 class Register: public HTTPServlet {
 public:
-	CPDSService* CPDS;
-	Register(CPDSService* CPDS);
+	CPDSSeever* CPDS;
+	Register(CPDSSeever* CPDS);
 	virtual string handleRequest(map<string, string> params);
 	virtual ~Register() {
 	}
@@ -33,8 +33,8 @@ public:
 
 class LogIn: public HTTPServlet {
 public:
-	CPDSService* CPDS;
-	LogIn(CPDSService* CPDS);
+	CPDSSeever* CPDS;
+	LogIn(CPDSSeever* CPDS);
 	virtual string handleRequest(map<string, string> params);
 	virtual ~LogIn() {
 	}
@@ -43,8 +43,8 @@ public:
 
 class GetOnlineUsers: public HTTPServlet {
 public:
-	CPDSService* CPDS;
-	GetOnlineUsers(CPDSService* CPDS);
+	CPDSSeever* CPDS;
+	GetOnlineUsers(CPDSSeever* CPDS);
 	virtual string handleRequest(map<string, string> params);
 	virtual ~GetOnlineUsers() {
 	}
@@ -54,8 +54,8 @@ public:
 // TESTTTTTTTTTTTTTTTTtt
 class GetJson: public HTTPServlet {
 public:
-	CPDSService* CPDS;
-	GetJson(CPDSService* CPDS);
+	CPDSSeever* CPDS;
+	GetJson(CPDSSeever* CPDS);
 	virtual string handleRequest(map<string, string> params);
 	virtual ~GetJson() {
 	}
@@ -64,8 +64,8 @@ public:
 
 class GetUserDetails: public HTTPServlet {
 public:
-	CPDSService* CPDS;
-	GetUserDetails(CPDSService* CPDS);
+	CPDSSeever* CPDS;
+	GetUserDetails(CPDSSeever* CPDS);
 	virtual string handleRequest(map<string, string> params);
 	virtual ~GetUserDetails() {
 	}
@@ -74,8 +74,8 @@ public:
 
 class LogOut: public HTTPServlet {
 public:
-	CPDSService* CPDS;
-	LogOut(CPDSService* CPDS);
+	CPDSSeever* CPDS;
+	LogOut(CPDSSeever* CPDS);
 	virtual string handleRequest(map<string, string> params);
 	virtual ~LogOut() {
 	}
@@ -83,8 +83,8 @@ public:
 };
 class WebPortal: public HTTPServlet {
 public:
-	CPDSService* CPDS;
-	WebPortal(CPDSService* CPDS);
+	CPDSSeever* CPDS;
+	WebPortal(CPDSSeever* CPDS);
 	virtual string handleRequest(map<string, string> params);
 	virtual ~WebPortal() {
 	}

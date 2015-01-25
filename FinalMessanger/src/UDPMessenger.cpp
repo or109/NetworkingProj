@@ -140,7 +140,7 @@ string UDPMessenger::login(string user, string password) {
 // Get logged users from server
 string UDPMessenger::getUserList() {
 
-	HTTPClient* CPDS = new HTTPClient(IP_ADDR"/getonlineusers");
+	HTTPClient* CPDS = new HTTPClient(IP_ADDR"/onlineusers");
 
 	if (CPDS->sendGetRequest()) {
 		string response = CPDS->response();
@@ -155,7 +155,7 @@ string UDPMessenger::getUserList() {
 // Get user details from server
 string UDPMessenger::getUserDetails(string user) {
 
-	HTTPClient* CPDS = new HTTPClient(IP_ADDR"/getuserdetails");
+	HTTPClient* CPDS = new HTTPClient(IP_ADDR"/userdetails");
 	CPDS->setParam("user", user);
 
 	if (CPDS->sendGetRequest()) {

@@ -1,18 +1,20 @@
-#include "CPDSService.h"
+#include "CPDSServer.h"
+#include <sstream>
 
 // Transform string to int
 bool String2Int(const std::string& str, int& result) {
 	return sscanf(str.c_str(), "%d", &result) == 1;
 }
 
-CPDSService::CPDSService() {
+// The Central Personal Directory Service (CPDS)
+CPDSSeever::CPDSSeever() {
 	httpserver = new HTTPServer(LISTENING_PORT);
 
 	// Register all the servlets
 	httpserver->registerServlet("/register", *(new Register(this)));
 	httpserver->registerServlet("/login", *(new LogIn(this)));
-	httpserver->registerServlet("/getonlineusers", *(new GetOnlineUsers(this)));
-	httpserver->registerServlet("/getuserdetails", *(new GetUserDetails(this)));
+	httpserver->registerServlet("/onlineusers", *(new GetOnlineUsers(this)));
+	httpserver->registerServlet("/userdetails", *(new GetUserDetails(this)));
 	httpserver->registerServlet("/logout", *(new LogOut(this)));
 	httpserver->registerServlet("/webportal.html", *(new WebPortal(this)));
 	httpserver->registerServlet("/getjson", *(new GetJson(this)));
@@ -22,11 +24,11 @@ CPDSService::CPDSService() {
 }
 
 // kill HTTP server
-CPDSService::~CPDSService() {
+CPDSSeever::~CPDSSeever() {
 	this->httpserver->kill();
 }
 
-void CPDSService::UpdateConnections() {
+void CPDSSeever::UpdateConnections() {
 	for (map<string, User*>::iterator iterator = userList.begin();
 			iterator != userList.end(); iterator++) {
 		if (iterator->second->loggedin)
@@ -37,7 +39,7 @@ void CPDSService::UpdateConnections() {
 }
 
 // Init CPDS to servlet
-Register::Register(CPDSService* CPDS) {
+Register::Register(CPDSSeever* CPDS) {
 	this->CPDS = CPDS;
 }
 
@@ -72,11 +74,9 @@ string Register::handleRequest(map<string, string> params) {
 }
 
 // Init CPDS to servlet
-LogIn::LogIn(CPDSService* CPDS) {
+LogIn::LogIn(CPDSSeever* CPDS) {
 	this->CPDS = CPDS;
 }
-
-
 
 // Login to user with password, ip and port
 string LogIn::handleRequest(map<string, string> params) {
@@ -135,7 +135,7 @@ string LogIn::handleRequest(map<string, string> params) {
 }
 
 // Init CPDS to servlet
-GetOnlineUsers::GetOnlineUsers(CPDSService* CPDS) {
+GetOnlineUsers::GetOnlineUsers(CPDSSeever* CPDS) {
 	this->CPDS = CPDS;
 }
 
@@ -159,7 +159,7 @@ string GetOnlineUsers::handleRequest(map<string, string> params) {
 }
 
 //Init CPDS to servlet
-GetJson::GetJson(CPDSService* CPDS) {
+GetJson::GetJson(CPDSSeever* CPDS) {
 	this->CPDS = CPDS;
 }
 
@@ -186,7 +186,8 @@ string GetJson::handleRequest(map<string, string> params) {
 			result += ",\"ip\": \"" + iterator->second->ip + "\"";
 			result += ",\"port\":";
 			result += portStr;
-			result += ",\"lastLoginTime\": \"" + iterator->second->lastLoginTime + "\"";
+			result += ",\"lastLoginTime\": \"" + iterator->second->lastLoginTime
+					+ "\"";
 			result += "}";
 		}
 	}
@@ -207,7 +208,7 @@ string GetJson::handleRequest(map<string, string> params) {
 }
 
 // Init CPDS to servlet
-GetUserDetails::GetUserDetails(CPDSService* CPDS) {
+GetUserDetails::GetUserDetails(CPDSSeever* CPDS) {
 	this->CPDS = CPDS;
 }
 
@@ -251,7 +252,7 @@ string GetUserDetails::handleRequest(map<string, string> params) {
 }
 
 //Init CPDS to servlet
-LogOut::LogOut(CPDSService* CPDS) {
+LogOut::LogOut(CPDSSeever* CPDS) {
 	this->CPDS = CPDS;
 }
 
@@ -273,8 +274,18 @@ string LogOut::handleRequest(map<string, string> params) {
 				!= pass->second)
 			data = "ERROR - user password is incorrect";
 		else if (this->CPDS->userList.find(user->second)->second->loggedin) {
+			User* usr = this->CPDS->userList.find(user->second)->second;
+			//this->CPDS->userList.find(user->second)->second->logout();
+			usr->logout();
+			//this->CPDS->userList.find(user->second)->second->port
+			//usr->
+			map<string, string>::iterator portInUse;
 
-			this->CPDS->userList.find(user->second)->second->logout();
+			stringstream str;
+			str << usr->ip + ":" << usr->port;
+			string str1 = str.str();
+
+			portInUse = this->CPDS->portList.find(str1);
 			data = "OK user logged out";
 		} else {
 			data = "ERROR - user is already logged out";
@@ -292,7 +303,7 @@ string LogOut::handleRequest(map<string, string> params) {
 }
 
 // Init CPDS to servlet
-WebPortal::WebPortal(CPDSService* CPDS) {
+WebPortal::WebPortal(CPDSSeever* CPDS) {
 	this->CPDS = CPDS;
 }
 

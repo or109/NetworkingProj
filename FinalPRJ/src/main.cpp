@@ -1,5 +1,5 @@
 #include <iostream>
-#include "CPDSService.h"
+#include "CPDSServer.h"
 #include <string.h>
 #include <stdio.h>
 #include <string.h>
@@ -11,6 +11,7 @@
 #include <unistd.h>
 #include <arpa/inet.h>
 #include <cstdlib>
+#include <sstream>
 
 using namespace std;
 
@@ -32,19 +33,22 @@ const std::string GetLocalIP() {
 }
 
 void printInstructions(string ip) {
-	//cout << "Server is up - " << currentDateTime() << endl;
+	stringstream str;
+	str << LISTENING_PORT;
+	string portStr = str.str();
+
 	cout << "\n=== Server REST API ===" << endl;
-	cout << "http://" + ip + "/register?user=USERNAME&password=PASS" << endl;
-	cout << "http://" + ip + "/login?user=USERNAME&password=PASS" << endl;
-	cout << "http://" + ip + "/getonlineusers" << endl;
-	cout << "http://" + ip + "/getuserdetails?user=USERNAME" << endl;
-	cout << "http://" + ip + "/logout?user=USERNAME&password=PASS" << endl;
-	cout << "http://" + ip + "/webportal.html" << endl;
-	cout << "http://" + ip + "/getjson" << endl;
+	cout << "http://" + ip + ":" + portStr + "/register?user=USERNAME&password=PASS" << endl;
+	cout << "http://" + ip + ":" + portStr + "/login?user=USERNAME&password=PASS" << endl;
+	cout << "http://" + ip + ":" + portStr + "/onlineusers" << endl;
+	cout << "http://" + ip + ":" + portStr + "/userdetails?user=USERNAME" << endl;
+	cout << "http://" + ip + ":" + portStr + "/logout?user=USERNAME&password=PASS" << endl;
+	cout << "http://" + ip + ":" + portStr + "/webportal.html" << endl;
+	cout << "http://" + ip + ":" + portStr + "/getjson" << endl;
 }
 
 int main() {
-	CPDSService* CPDS = new CPDSService();
+	CPDSSeever* CPDS = new CPDSSeever();
 
 	printInstructions(GetLocalIP());
 
@@ -56,7 +60,7 @@ int main() {
 			break;
 		}
 	}
-	CPDS->~CPDSService();
+	CPDS->~CPDSSeever();
 
 	return 0;
 }
