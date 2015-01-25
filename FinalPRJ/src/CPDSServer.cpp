@@ -275,18 +275,20 @@ string LogOut::handleRequest(map<string, string> params) {
 			data = "ERROR - user password is incorrect";
 		else if (this->CPDS->userList.find(user->second)->second->loggedin) {
 			User* usr = this->CPDS->userList.find(user->second)->second;
-			//this->CPDS->userList.find(user->second)->second->logout();
 			usr->logout();
-			//this->CPDS->userList.find(user->second)->second->port
-			//usr->
 			map<string, string>::iterator portInUse;
 
 			stringstream str;
-			str << usr->ip + ":" << usr->port;
+			str << usr->ip << ":" << usr->port;
 			string str1 = str.str();
+			cout << str1 << endl;
+			//string ipPort = usr->ip + ":" + usr->port;
 
 			portInUse = this->CPDS->portList.find(str1);
-			data = "OK user logged out";
+			this->CPDS->portList.erase(portInUse);
+			this->CPDS->portList.erase(str1);
+
+			data = "OK user:" + usr->username + " logged out";
 		} else {
 			data = "ERROR - user is already logged out";
 		}

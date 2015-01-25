@@ -26,7 +26,7 @@ UDPSocket::UDPSocket(int port) {
 	fsize = sizeof(from);
 
 	// Bind the socket on the specified address
-	cout << "UDP server binding listening on port " << port;
+	cout << "UDP server binding listening on port " << port << endl;
 	if (bind(socket_fd, (struct sockaddr *) &s_in, sizeof(s_in)) < 0) {
 		perror("Error naming channel");
 	}

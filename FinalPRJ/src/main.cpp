@@ -39,7 +39,7 @@ void printInstructions(string ip) {
 
 	cout << "\n=== Server REST API ===" << endl;
 	cout << "http://" + ip + ":" + portStr + "/register?user=USERNAME&password=PASS" << endl;
-	cout << "http://" + ip + ":" + portStr + "/login?user=USERNAME&password=PASS" << endl;
+	cout << "http://" + ip + ":" + portStr + "/login?user=USERNAME&password=PASS&ip=IP&port=PORT" << endl;
 	cout << "http://" + ip + ":" + portStr + "/onlineusers" << endl;
 	cout << "http://" + ip + ":" + portStr + "/userdetails?user=USERNAME" << endl;
 	cout << "http://" + ip + ":" + portStr + "/logout?user=USERNAME&password=PASS" << endl;
